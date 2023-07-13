@@ -1,0 +1,31 @@
+# 忽略 Python 编译文件
+*.pyc
+__pycache__/
+
+# 忽略本地配置文件
+config.ini
+
+# 忽略日志文件
+*.log
+
+# 忽略临时文件
+*.tmp
+
+# 忽略虚拟环境
+venv/
+
+# 忽略包管理工具生成的文件
+pip-lock.txt
+requirements.txt
+
+# 忽略IDE和编辑器生成的配置文件
+.vscode/
+.idea/
+*.sublime-*
+*.swp
+
+# 忽略其他自动生成的文件
+*.bak
+*.backup
+
+data
