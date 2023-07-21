@@ -1,8 +1,23 @@
 
+
 import requests
 import pandas as pd
 import concurrent.futures
-from datetime import date
+import datetime
+import logging
+import os
+
+output_path =  f"{os.path.abspath(os.getcwd())}/data"
+os.makedirs(output_path)
+
+# 配置日志记录器
+logging.basicConfig(
+    filename="logs.log",
+    encoding="utf-8",
+    level=logging.DEBUG,
+    format="%(asctime)s %(levelname)s :%(message)s",
+    datefmt="%Y/%m/%d %I:%M:%S %p",
+)
 
 
 def fetch_pes():
@@ -27,7 +42,9 @@ def fetch_pes():
 
     try:
         res = requests.get(url, params=params)
-
+        
+        logging.info(f"**** {res.status_code} ****")
+        
         if (res.status_code != 200):
             raise ValueError(res.text)
 
@@ -38,9 +55,9 @@ def fetch_pes():
             columns=columns,
             inplace=True
         )
-        df.to_csv("./data/pe-{}.csv".format(date.today()), index=False)
+        df.to_csv(f"{output_path}/pe-{datetime.date.today()}.csv", index=False)
     except Exception as e:
-        print("Error: " + e)
+        logging.error("Error: " + e)
 
 
 def fetch_etfs():
@@ -77,8 +94,14 @@ def fetch_etfs():
         "fields": ','.join(list(columns.keys())),
         "_": "1672806290972",
     }
+    
+    logging.info("**** start fetch etf ****")
+    
     try:
         res = requests.get(url, params=params)
+        
+        logging.info(f"**** {res.status_code} ****")
+        
         if (res.status_code != 200):
             raise ValueError(res)
 
@@ -89,12 +112,13 @@ def fetch_etfs():
             columns=columns,
             inplace=True
         )
-        df.to_csv("./data/etf-{}.csv".format(date.today()), index=False)
+        df.to_csv(f"{output_path}/etf-{datetime.datetime.today()}-{datetime.datetime.now().minute}.csv", index=False)
     except Exception as e:
-        print("Error: " + e)
+        logging.error("Error: " + e)
 
 def run():
-    print("run")
+    logging.info("**** start running ****") 
+    
     with concurrent.futures.ThreadPoolExecutor() as executor:
         futures = [
             executor.submit(fetch_pes),
@@ -103,4 +127,5 @@ def run():
 
     concurrent.futures.as_completed(futures)
 
+run()
 
